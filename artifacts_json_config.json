@@ -1,0 +1,398 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "name": "Founder Context Proxy - F# AI Development Environment",
+    "description": "Pre-configured DevBox for F# AI pair programming with context persistence",
+    "author": "founder-ctx-proxy",
+    "version": "1.0.0"
+  },
+  "parameters": {
+    "devBoxName": {
+      "type": "string",
+      "defaultValue": "founder-ai-devbox",
+      "metadata": {
+        "description": "Name of the DevBox instance"
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "general_i_8c32gb256ssd_v2",
+      "allowedValues": [
+        "general_i_8c32gb256ssd_v2",
+        "general_i_16c64gb512ssd_v2",
+        "general_i_32c128gb1024ssd_v2"
+      ],
+      "metadata": {
+        "description": "DevBox SKU configuration"
+      }
+    }
+  },
+  "variables": {
+    "setupScripts": [
+      "scripts/common.ps1",
+      "scripts/install-dotnet.ps1", 
+      "scripts/install-fsharp.ps1",
+      "scripts/install-azure-cli.ps1",
+      "scripts/install-ai-tools.ps1"
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.DevCenter/projects/pools/schedules",
+      "apiVersion": "2023-04-01",
+      "name": "auto-shutdown",
+      "properties": {
+        "type": "StopDevBox",
+        "frequency": "Daily",
+        "time": "20:00",
+        "timeZone": "America/Sao_Paulo"
+      },
+      "productivityTools": {
+        "powerToys": {
+          "version": "latest",
+          "features": [
+            "FancyZones",
+            "PowerToysRun", 
+            "ImageResizer",
+            "PowerRename",
+            "ColorPicker",
+            "TextExtractor"
+          ]
+        },
+        "windowsTerminal": {
+          "version": "latest",
+          "profiles": ["PowerShell", "WSL", "Command Prompt"],
+          "themes": ["Dark", "Light", "Campbell"],
+          "fonts": ["CascadiaCove NF", "FiraCode NF"]
+        },
+        "ohMyPosh": {
+          "version": "latest",
+          "themes": ["jandedobbeleer", "powerlevel10k_classic"],
+          "integrations": ["posh-git", "Terminal-Icons", "PSReadLine"]
+        }
+      },
+      "autoLoginSecurity": {
+        "microsoftAutologon": {
+          "tool": "Sysinternals Autologon",
+          "security": "LSA Secret encryption",
+          "bypass": "Shift key override"
+        }
+      },
+      "azureKeyVault": {
+        "cli": "az keyvault",
+        "bestPractices": {
+          "rbacModel": "enabled",
+          "purgeProtection": "enabled",
+          "separateVaults": "per-environment",
+          "managedIdentity": "preferred"
+        }
+      },
+        "githubDesktop": "latest",
+        "postman": "latest", 
+        "terraform": "latest",
+        "kubectl": "latest",
+        "helm": "latest",
+        "azureCLI": "latest"
+      },
+      "designTools": {
+        "figmaDesktop": "latest",
+        "drawio": "latest",
+        "canva": "desktop-app"
+      },
+      "monitoringTools": {
+        "grafana": "latest",
+        "azureMonitorAgent": "latest",
+        "applicationInsights": "latest"
+      },
+      "metadata": {
+        "description": "Auto-shutdown to optimize costs - 8 PM Brazil time"
+      }
+    }
+  ],
+  "devBoxConfiguration": {
+    "baseImage": "microsoftwindowsdesktop_windows-ent-cpc_win11-22h2-ent-cpc-m365",
+    "preInstalled": {
+      "ides": {
+        "cursor": {
+          "version": "latest",
+          "url": "https://download.todesktop.com/230313mzl4w4u92/Cursor%20Setup%200.45.8%20-%20x64.exe",
+          "extensions": [
+            "Ionide.Ionide-fsharp",
+            "ms-dotnettools.csharp",
+            "GitHub.copilot",
+            "GitHub.copilot-chat"
+          ]
+        },
+        "windsurf": {
+          "version": "latest", 
+          "url": "https://windsurf-stable.codeiumdata.com/wVxwEpi7VwdIrGURzfaUwfOpMLR/latest/windows/x64/WindsurfSetup.exe"
+        },
+        "visualStudioEnterprise": {
+          "edition": "Enterprise",
+          "workloads": [
+            "Microsoft.VisualStudio.Workload.ManagedDesktop",
+            "Microsoft.VisualStudio.Workload.NetWeb",
+            "Microsoft.VisualStudio.Component.FSharp",
+            "Microsoft.VisualStudio.ComponentGroup.AI",
+            "Microsoft.VisualStudio.Component.IntelliCode",
+            "Microsoft.VisualStudio.Workload.Data",
+            "Microsoft.VisualStudio.Workload.DataScience"
+          ]
+        },
+        "jetbrainsRider": {
+          "version": "latest",
+          "plugins": [
+            "F# Support",
+            "Azure Toolkit",
+            "GitHub Copilot",
+            ".NET Core User Secrets"
+          ]
+        },
+        "vsCode": {
+          "version": "latest",
+          "extensions": [
+            "Ionide.Ionide-fsharp",
+            "ms-dotnettools.csharp", 
+            "ms-azure-devops.azure-pipelines",
+            "GitHub.copilot",
+            "GitHub.copilot-chat",
+            "ms-vscode.azure-account",
+            "ms-azuretools.azure-dev"
+          ]
+        }
+      },
+      "aiDesktopApps": {
+        "claudeDesktop": {
+          "version": "latest",
+          "url": "https://claude.ai/download",
+          "mcpConfig": {
+            "filesystem": "@modelcontextprotocol/server-filesystem",
+            "brave-search": "@modelcontextprotocol/server-brave-search",
+            "github": "@modelcontextprotocol/server-github"
+          },
+          "integrations": [
+            "zapier",
+            "slack",
+            "atlassian",
+            "cloudflare"
+          ]
+        }
+      },
+      "aiFrameworks": {
+        "fastAgent": {
+          "install": "pip install fast-agent",
+          "description": "First MCP-native agent framework - 37% faster development"
+        },
+        "mem0": {
+          "install": "pip install mem0ai",
+          "description": "SOTA AI memory layer - 26% more accurate than OpenAI Memory"
+        },
+        "semanticKernel": {
+          "install": "dotnet add package Microsoft.SemanticKernel",
+          "description": "Microsoft AI integration framework"
+        },
+        "genAIScript": {
+          "install": "npm install -g genaiscript",
+          "description": "Microsoft AI automation with JavaScript"
+        },
+        "aider": {
+          "install": "pip install aider-chat",
+          "description": "AI coding in terminal"
+        },
+        "githubCopilot": {
+          "cli": "gh extension install github/gh-copilot"
+        }
+      },
+      "dotnet": {
+        "sdks": ["8.0", "9.0-preview"],
+        "tools": [
+          "dotnet-interactive",
+          "fantomas",
+          "fsharp-analyzers", 
+          "paket",
+          "fake-cli"
+        ],
+        "templates": [
+          "Microsoft.DotNet.Common.ProjectTemplates",
+          "Microsoft.FSharp.ProjectTemplates"
+        ]
+      },
+      "fsharpEcosystem": {
+        "nugetSources": [
+          "https://api.nuget.org/v3/index.json",
+          "https://www.nuget.org/api/v2"
+        ],
+        "fsharpRepositories": {
+          "fsharpCore": "https://github.com/dotnet/fsharp",
+          "fsharpPowerPack": "https://github.com/fsprojects/FSharpx.Extras",
+          "paket": "https://github.com/fsprojects/Paket",
+          "fake": "https://github.com/fsprojects/FAKE"
+        },
+        "essentialPackages": [
+          "FSharp.Core",
+          "FSharpx.Extras", 
+          "Argu",
+          "FsUnit",
+          "FSharp.Data",
+          "Newtonsoft.Json"
+        ]
+      },
+      "azure": {
+        "cli": "latest",
+        "functions-core-tools": "latest",
+        "cognitiveServices": "latest",
+        "openai": "latest",
+        "search": "latest"
+      },
+      "jetbrainsTools": {
+        "resharper": "latest",
+        "dotTrace": "latest", 
+        "dotMemory": "latest",
+        "dotCover": "latest",
+        "teamCity": "build-agent"
+      },
+      "containerization": {
+        "wsl2": {
+          "distributions": ["Ubuntu-22.04", "Alpine"],
+          "features": ["systemd", "GPU-passthrough"]
+        },
+        "dockerDesktop": {
+          "version": "latest",
+          "features": [
+            "kubernetes",
+            "compose-v2",
+            "buildx",
+            "scout",
+            "extensions"
+          ],
+          "extensions": [
+            "docker/volumes-backup-extension",
+            "docker/logs-explorer-extension"
+          ]
+        }
+      },
+        "sqlServer2022": {
+          "edition": "Developer",
+          "features": [
+            "SQLEngine",
+            "Replication", 
+            "FullText",
+            "AnalysisServices",
+            "IntegrationServices",
+            "MachineLearningServices"
+          ]
+        },
+        "ssms": "latest",
+        "azureDataStudio": "latest"
+      },
+        "openAI": {
+          "models": ["gpt-4o", "gpt-4o-mini", "o1", "o3"],
+          "embedding": "text-embedding-3-large"
+        },
+        "cognitiveServices": {
+          "textAnalytics": "latest",
+          "translator": "latest",
+          "speech": "latest"
+        },
+        "aiSearch": {
+          "vectorSearch": "enabled",
+          "hybridSearch": "enabled"
+        },
+        "cosmosDB": {
+          "vectorEmbedding": "enabled",
+          "graphAPI": "enabled"
+        },
+        "redis": {
+          "vectorSearch": "enabled",
+          "aiCache": "enabled"
+        }
+      },
+      "ai": {
+        "python": "3.12",
+        "packages": [
+          "openai>=1.0.0",
+          "azure-ai-textanalytics",
+          "azure-cognitiveservices-language-textanalytics",
+          "semantic-kernel",
+          "aider-chat"
+        ]
+      },
+      "nodeJs": {
+        "version": "20.x",
+        "globalPackages": [
+          "genaiscript",
+          "@azure/functions-core-tools",
+          "typescript"
+        ]
+      }
+    },
+    "environmentVariables": {
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_NOLOGO": "1", 
+      "AZURE_SUBSCRIPTION_ID": "${subscription_id}",
+      "FOUNDER_CONTEXT_REPO": "founder-ctx-proxy"
+    },
+    "startupTasks": [
+      {
+        "name": "clone-repositories",
+        "command": "pwsh",
+        "args": [
+          "-File", 
+          "scripts/clone-repos.ps1"
+        ]
+      },
+      {
+        "name": "setup-fsharp-ecosystem",
+        "command": "pwsh", 
+        "args": [
+          "-File",
+          "scripts/install-fsharp-ecosystem.ps1"
+        ]
+      },
+      {
+        "name": "clone-fsharp-references",
+        "command": "pwsh",
+        "args": [
+          "-File", 
+          "scripts/clone-fsharp-repos.ps1"
+        ]
+      },
+      {
+        "name": "setup-development-environment", 
+        "command": "pwsh",
+        "args": [
+          "-File",
+          "scripts/setup-dev-env.ps1"
+        ]
+      }
+    ]
+  },
+  "costOptimization": {
+    "autoShutdown": {
+      "enabled": true,
+      "time": "20:00",
+      "timeZone": "America/Sao_Paulo"
+    },
+    "autoStart": {
+      "enabled": false,
+      "weekdays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "time": "09:00"
+    },
+    "hibernation": {
+      "enabled": true,
+      "idleTimeMinutes": 30
+    }
+  },
+  "monitoring": {
+    "applicationInsights": {
+      "enabled": true,
+      "instrumentationKey": "${ai_instrumentation_key}"
+    },
+    "customMetrics": [
+      "development-session-duration",
+      "ai-pair-programming-interactions",
+      "context-retrieval-frequency"
+    ]
+  }
+}
